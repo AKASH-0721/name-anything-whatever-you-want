@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+venv/
+env/
+.git
+.gitignore
+*.log
+__MACOSX
+*.sqlite3
+node_modules/
+train/
+extracted_faces/
+embeddings_db.pkl
+attendance.csv
