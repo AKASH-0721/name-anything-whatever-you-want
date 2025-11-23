@@ -35,7 +35,7 @@ print("🔄 Loading Buffalo model...")
 
 
 # 1️⃣ Load full buffalo_l model with optimized settings
-face_app = FaceAnalysis(name="buffalo_l", allowed_modules=['detection', 'recognition'])
+face_app = FaceAnalysis(name="buffalo_s", allowed_modules=['detection', 'recognition'])
 face_app.prepare(ctx_id=0, det_size=(320, 320))
 
 # Lower detection thresholds for more sensitive detection
