@@ -116,79 +116,61 @@ Since Render doesn't have access to your local `train/` folder:
 
 ---
 
-## 🔵 Vercel Deployment (Simplified)
+## 🔵 Vercel Deployment (Lightweight)
+
+### ⚠️ **Important: Limited Features**
+Vercel has strict serverless limitations. This deployment only supports **manual attendance marking**.
 
 ### Prerequisites
 - Node.js and npm installed
 - Vercel account
 
-### Step 1: Prepare Lightweight Version
+### Step 1: Prepare for Vercel
 ```bash
 # Install Vercel CLI
 npm install -g vercel
 
-# Create simplified requirements
-cat > requirements.txt << EOF
-Flask==3.0.3
-Flask-Cors==4.0.0
-numpy==1.24.3
-pillow==10.0.0
-werkzeug==3.0.2
-mediapipe==0.10.7
-requests==2.31.0
-EOF
+# Copy lightweight requirements
+cp requirements-vercel.txt requirements.txt
 ```
 
-### Step 2: Create Vercel Configuration
+### Step 2: Deploy to Vercel
 ```bash
-# Create vercel.json
-cat > vercel.json << EOF
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "app.py",
-      "use": "@vercel/python",
-      "config": {"maxLambdaSize": "50mb"}
-    }
-  ],
-  "routes": [{"src": "/(.*)", "dest": "app.py"}],
-  "env": {
-    "VERCEL_ENV": "1",
-    "FLASK_ENV": "production"
-  },
-  "functions": {
-    "app.py": {
-      "maxDuration": 300,
-      "memory": 3008
-    }
-  }
-}
-EOF
-```
-
-### Step 3: Modify App for Serverless
-```bash
-# Add this to config.py VercelConfig class:
-# Use MediaPipe instead of InsightFace for size limits
-# Disable training endpoint (too heavy for serverless)
-```
-
-### Step 4: Deploy
-```bash
-# Deploy to Vercel
+# Deploy (vercel.json and api/index.py are already configured)
 vercel --prod
 
-# Test deployment
-curl https://your-app.vercel.app/health
+# Follow prompts:
+# - Link to existing project? No
+# - Project name: your-project-name
+# - Directory: ./
+# - Settings? No
 ```
 
-### Vercel Limitations
-- ❌ 50MB package size limit (no full InsightFace)
-- ❌ 10-second timeout on hobby plan
-- ❌ No persistent storage
-- ✅ Global CDN and auto-scaling
-- ✅ Great for demos and simple recognition
+### Step 3: Test Deployment
+```bash
+# Test health check
+curl https://your-app.vercel.app/health
+
+# Test manual attendance
+curl -X POST https://your-app.vercel.app/mark_manual \
+  -H "Content-Type: application/json" \
+  -d '{"rolls":[1,2,3],"section":"A"}'
+```
+
+### Vercel Features
+- ✅ **Manual attendance marking** - Fully functional
+- ✅ **Global CDN** - Fast worldwide access
+- ✅ **Auto-scaling** - Handle traffic spikes
+- ✅ **Free tier** - 100GB bandwidth/month
+- ❌ **Face recognition disabled** - Package too large
+- ❌ **Training disabled** - Serverless limitations
+
+### Why Limited?
+- **50MB limit**: ML libraries exceed Vercel's size limit
+- **10s timeout**: Model loading takes too long
+- **No storage**: Can't save training data or models
+
+### **Recommendation**: Use Vercel for demos/manual attendance, Docker/Render for full ML features
 
 ---
 
