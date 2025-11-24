@@ -265,14 +265,45 @@ app.config['MAX_CONTENT_LENGTH'] = config.MAX_CONTENT_LENGTH
 @app.route("/", methods=["GET"])
 def home():
     """Home page with API information"""
+    platform = "Docker"
+    if os.environ.get('VERCEL_ENV'):
+        platform = "Vercel"
+    elif os.environ.get('RENDER'):
+        platform = "Render"
+    
     return jsonify({
         "message": "Face Recognition Attendance System",
+        "platform": platform,
         "endpoints": {
             "/train": "POST - Train the face recognition model",
             "/recognize": "POST - Recognize faces and mark attendance",
-            "/mark_manual": "POST - Manually mark attendance"
+            "/mark_manual": "POST - Manually mark attendance",
+            "/health": "GET - Health check endpoint"
         },
         "status": "running"
+    })
+
+@app.route("/health", methods=["GET"])
+def health():
+    """Health check endpoint for deployment platforms"""
+    platform = "Docker"
+    optimizations = []
+    
+    if os.environ.get('VERCEL_ENV'):
+        platform = "Vercel"
+        optimizations = ["lazy_loading", "memory_efficient", "timeout_optimized"]
+    elif os.environ.get('RENDER'):
+        platform = "Render"  
+        optimizations = ["persistent_storage", "full_ml_pipeline", "extended_timeout"]
+    elif os.environ.get('DOCKER_ENV'):
+        platform = "Docker"
+        optimizations = ["containerized", "gpu_ready", "scalable"]
+    
+    return jsonify({
+        "status": "healthy",
+        "platform": platform,
+        "optimizations": optimizations,
+        "timestamp": __import__('datetime').datetime.utcnow().isoformat() + "Z"
     })
 
 @app.route("/train", methods=["POST"])

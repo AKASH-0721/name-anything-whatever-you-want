@@ -1,9 +1,32 @@
 services:
   - type: web
-    name: API
+    name: face-recognition-api
     runtime: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
+    buildCommand: "pip install -r requirements-render.txt"
+    startCommand: "gunicorn app:app --bind 0.0.0.0:$PORT --workers 1 --timeout 300 --max-requests 100"
     envVars:
       - key: PYTHONUNBUFFERED
         value: "true"
+      - key: RENDER
+        value: "true"
+      - key: FLASK_ENV
+        value: "production"
+    plan: starter
+    healthCheckPath: "/health"
+    autoDeploy: false
+    
+  # Alternative serverless-optimized service
+  - type: web
+    name: face-recognition-serverless
+    runtime: python
+    buildCommand: "pip install -r requirements-vercel.txt"
+    startCommand: "gunicorn app_serverless:app --bind 0.0.0.0:$PORT --workers 1 --timeout 300"
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "true"
+      - key: RENDER
+        value: "true"
+      - key: FLASK_ENV
+        value: "production"
+    plan: starter
+    healthCheckPath: "/health"
